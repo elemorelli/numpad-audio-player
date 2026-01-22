@@ -1,15 +1,15 @@
 {
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "lib": ["ES2020", "DOM"],
-    "strict": true,
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"lib": ["ES2020", "DOM"],
+		"strict": true,
     "noImplicitAny": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "types": ["foundry-vtt-types"],
-    "skipLibCheck": true
-  },
-  "include": ["src"]
+		"outDir": "dist",
+		"rootDir": "src",
+		"types": ["fvtt-types"],
+		"skipLibCheck": true
+	},
+	"include": ["src"]
 }
