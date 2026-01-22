@@ -1,0 +1,16 @@
+{
+  "id": "playlist-thing",
+  "title": "Playlist Thing",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "flags": {
+    "canUpload": true
+  },
+  "description": "",
+  "esmodules": [
+    "dist/main.js"
+  ]
+}
