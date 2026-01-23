@@ -48,27 +48,30 @@ export const togglePlaylist = async (key: number) => {
 };
 
 export const stopTrackedPlaylists = async () => {
-  const tracked = getTrackedPlaylists();
+  const tracked = getTrackedPlaylists().filter((pl) =>
+    pl.sounds.some((s) => s.playing)
+  );
+
+  if (!tracked.length) return;
+
   for (const playlist of tracked) {
     await playlist.stopAll();
   }
 
-  ui.notifications?.info(`🎵 Playback stopped`);
+  const names = tracked.map((pl) => pl.name).join(', ');
+  ui.notifications?.info(`🎵 Stopped playlists: ${names}`);
 };
 
 export const nextTrack = async () => {
-  const playlists = getTrackedPlaylists();
+  const playlists = getTrackedPlaylists().filter(Boolean);
 
   for (const playlist of playlists) {
-    if (!playlist) continue;
-
     const isPlaying = playlist.sounds.some((s) => s.playing);
     if (!isPlaying) continue;
 
     await playlist.playNext();
 
     const currentSound = playlist.sounds.find((s) => s.playing);
-
     if (currentSound) {
       ui.notifications?.info(`🎵 ${playlist.name}: ${currentSound.name}`);
     }
