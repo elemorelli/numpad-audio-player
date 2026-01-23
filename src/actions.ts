@@ -53,6 +53,21 @@ export const stopTrackedPlaylists = async () => {
   }
 };
 
+export const nextTrack = async () => {
+  const playlists = getTrackedPlaylists();
+
+  for (const playlist of playlists) {
+    if (!playlist) continue;
+
+    const isPlaying = playlist.sounds.some((s) => s.playing);
+    if (!isPlaying) continue;
+
+    await playlist.playNext();
+
+    ui.notifications?.info(`🎵 ${playlist.name} → Next track`);
+  }
+};
+
 const clamp = (v: number) => Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, v));
 
 export const changeVolume = async (delta: number) => {

@@ -1,6 +1,7 @@
 import {
   decreaseVolume,
   increaseVolume,
+  nextTrack,
   stopTrackedPlaylists,
   togglePlaylist,
 } from './actions';
@@ -24,6 +25,8 @@ const NUMPAD_ACTIONS: Record<string, NumpadAction> = {
 
   NumpadAdd: increaseVolume,
   NumpadSubtract: decreaseVolume,
+
+  NumpadEnter: nextTrack,
 };
 
 const handleNumpadEvent = (event: KeyboardEvent) => {
