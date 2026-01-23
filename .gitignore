@@ -1,4 +1,10 @@
+# Node
 node_modules/
-dist/
+
+# Dev bundle
+dist/main.dev.js
+dist/main.dev.js.map
+
+# Environment / OS
 .env
 .DS_Store

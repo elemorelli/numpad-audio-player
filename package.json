@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently -k \"npm:watch\" \"npm:typecheck\"",
-    "watch": "esbuild src/main.ts --bundle --format=esm --target=es2020 --outfile=dist/main.js --watch",
+    "dev": "concurrently -k \"npm:watch\" \"npm:typecheck\"",
+    "watch": "esbuild src/main.ts --bundle --format=esm --target=es2020 --outfile=dist/main.dev.js --sourcemap --watch",
     "typecheck": "tsc --noEmit --watch",
     "build": "esbuild src/main.ts --bundle --minify --format=esm --target=es2020 --outfile=dist/main.js",
     "format": "prettier --write \"src/**/*.ts\""
