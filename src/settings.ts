@@ -164,10 +164,14 @@ export const populatePlaylistsChoices = () => {
   const playlists = game.playlists?.contents ?? [];
   const choices: Record<string, string> = { '': 'None' };
 
-  playlists.forEach((pl) => {
-    const folderName = pl.folder?.name;
-    const label = folderName ? `[${folderName}] ${pl.name}` : pl.name;
-    choices[pl.id] = label;
+  playlists.forEach((playlist) => {
+    const folderName = playlist.folder?.name;
+
+    const label = folderName
+      ? `[${folderName}] ${playlist.name}`
+      : playlist.name;
+
+    choices[playlist.id] = label;
   });
 
   NUMPAD_PLAYLIST_SETTINGS.forEach((key) => {

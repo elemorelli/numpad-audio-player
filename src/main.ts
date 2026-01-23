@@ -1,4 +1,4 @@
-import { applyTrackedPlaylistDefaults } from './audio-state';
+import { applyTrackedPlaylistDefaults } from './utils/audio-state';
 import { enableNumpadCapture } from './numpad-capture';
 import {
   canUseModule,

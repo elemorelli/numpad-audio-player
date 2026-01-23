@@ -1,22 +1,22 @@
-import { getTrackedPlaylists } from './playlist';
+import { getTrackedPlaylists } from '../utils/playlists';
 
 const VOLUME_STEP = 0.05;
 
 export const changeVolume = async (delta: number) => {
   const playlists = getTrackedPlaylists();
 
-  for (const pl of playlists) {
-    if (!pl) continue;
+  for (const playlist of playlists) {
+    if (!playlist) continue;
 
-    const updates = pl.sounds
-      .filter((s) => s.playing)
-      .map((s) => ({
-        _id: s.id,
-        volume: Math.clamp(s.volume + delta, 0, 1),
+    const updates = playlist.sounds
+      .filter((sound) => sound.playing)
+      .map((sound) => ({
+        _id: sound.id,
+        volume: Math.clamp(sound.volume + delta, 0, 1),
       }));
 
     if (updates.length > 0) {
-      await pl.updateEmbeddedDocuments('PlaylistSound', updates);
+      await playlist.updateEmbeddedDocuments('PlaylistSound', updates);
     }
   }
 };

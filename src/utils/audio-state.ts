@@ -1,5 +1,5 @@
-import { getTrackedPlaylists } from './actions';
-import { ModuleSettings, Setting } from './settings';
+import { ModuleSettings, Setting } from '../settings';
+import { getTrackedPlaylists } from './playlists';
 
 const waitForAudioUnlock = async () => {
   if (!game.audio?.locked) return;
@@ -29,26 +29,26 @@ export const applyTrackedPlaylistDefaults = async () => {
 
   const playlists = getTrackedPlaylists();
 
-  for (const pl of playlists) {
-    if (!pl) continue;
+  for (const playlist of playlists) {
+    if (!playlist) continue;
 
     const fade = ModuleSettings.get<number>(
       Setting.TRACKED_PLAYLIST_FADE_DURATION
     );
 
-    await pl.update({ fade });
+    await playlist.update({ fade });
 
     const volume = ModuleSettings.get<number>(
       Setting.TRACKED_PLAYLIST_INITIAL_VOLUME
     );
 
-    const updates = pl.sounds.map((s) => ({
-      _id: s.id,
+    const updates = playlist.sounds.map((sound) => ({
+      _id: sound.id,
       volume: volume,
     }));
 
     if (updates.length) {
-      await pl.updateEmbeddedDocuments('PlaylistSound', updates);
+      await playlist.updateEmbeddedDocuments('PlaylistSound', updates);
     }
   }
 };
