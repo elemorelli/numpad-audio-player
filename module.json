@@ -21,7 +21,7 @@
       "flags": {}
     }
   ],
-  "url": "https://github.com/ele/numpad-audio-player",
-  "manifest": "https://raw.githubusercontent.com/ele/numpad-audio-player/main/module.json",
-  "download": "https://github.com/ele/numpad-audio-player/archive/refs/heads/main.zip"
+  "url": "https://github.com/elemorelli/numpad-audio-player",
+  "manifest": "https://raw.githubusercontent.com/elemorelli/numpad-audio-player/main/module.json",
+  "download": "https://github.com/elemorelli/numpad-audio-player/archive/refs/heads/main.zip"
 }
