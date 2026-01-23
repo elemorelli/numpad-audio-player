@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc --watch",
-    "build": "tsc",
+    "start": "concurrently -k \"npm:watch\" \"npm:typecheck\"",
+    "watch": "esbuild src/main.ts --bundle --format=esm --target=es2020 --outfile=dist/main.js --watch",
+    "typecheck": "tsc --noEmit --watch",
+    "build": "esbuild src/main.ts --bundle --minify --format=esm --target=es2020 --outfile=dist/main.js",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
@@ -13,6 +15,8 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.27.2",
     "fvtt-types": "github:League-of-Foundry-Developers/foundry-vtt-types#main",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3"
