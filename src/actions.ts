@@ -43,7 +43,8 @@ export const togglePlaylist = async (key: number) => {
   }
 
   await playlist.playAll();
-  ui.notifications?.info(`🎵 ${playlist.name}`);
+  const currentSound = playlist.sounds.find((s) => s.playing);
+  ui.notifications?.info(`🎵 ${playlist.name}: ${currentSound?.name}`);
 };
 
 export const stopTrackedPlaylists = async () => {
@@ -51,6 +52,8 @@ export const stopTrackedPlaylists = async () => {
   for (const playlist of tracked) {
     await playlist.stopAll();
   }
+
+  ui.notifications?.info(`🎵 Playback stopped`);
 };
 
 export const nextTrack = async () => {
@@ -64,7 +67,11 @@ export const nextTrack = async () => {
 
     await playlist.playNext();
 
-    ui.notifications?.info(`🎵 ${playlist.name} → Next track`);
+    const currentSound = playlist.sounds.find((s) => s.playing);
+
+    if (currentSound) {
+      ui.notifications?.info(`🎵 ${playlist.name}: ${currentSound.name}`);
+    }
   }
 };
 
