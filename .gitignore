@@ -1,9 +1,6 @@
 # Node
 node_modules/
 
-# Dev bundle
-dist/main.js.map
-
 # Environment / OS
 .env
 .DS_Store

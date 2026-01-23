@@ -1,1 +1,298 @@
-var m=["key_1_playlist","key_2_playlist","key_3_playlist","key_4_playlist","key_5_playlist","key_6_playlist","key_7_playlist","key_8_playlist","key_9_playlist"],a={defaultRegisterOptions:{scope:"world",requiresReload:!0,config:!0},register:(e,t)=>{if(!game.settings)return;let n={...a.defaultRegisterOptions,...t};game.settings.register(r,e,n)},has:e=>{if(game.settings)return game.settings.settings.has(`${r}.${e}`)},get:e=>{if(game.settings)return game.settings.get(r,e)},set:(e,t)=>{if(game.settings)return game.settings.set(r,e,t)},getPlaylist:e=>{if(!game.settings||!game.playlists)return null;let t=game.settings.get(r,e);return t?game.playlists.get(t)??null:null},getPlaylistKey:e=>e<1||e>9?null:m[e-1]??null},p=()=>{a.register("minimumRole",{name:"Minimum Role needed",hint:"Players must have at least this role to control playlists.",type:Number,requiresReload:!0,default:CONST.USER_ROLES.ASSISTANT,choices:{[CONST.USER_ROLES.PLAYER]:"Player",[CONST.USER_ROLES.TRUSTED]:"Trusted Player",[CONST.USER_ROLES.ASSISTANT]:"Assistant Gamemaster",[CONST.USER_ROLES.GAMEMASTER]:"Gamemaster"}}),a.register("autoInitPlaylists",{name:"Auto-Initialize Tracked Playlists",hint:"If enabled, the module will automatically initialize playlists that have been assigned to numpad keys when the game starts. Only affects the tracked playlists.",type:Boolean,default:!0}),a.register("globalVolume",{name:"Default Volume for Tracked Playlists",hint:"Sets the initial volume for playlists that are assigned to numpad keys when starting or resuming playback.",type:Number,default:.7,range:{min:0,max:1,step:.01}}),a.register("fadeDuration",{name:"Fade Duration for Tracked Playlists (ms)",hint:"Time in milliseconds used for fade-in/fade-out when starting or stopping playlists assigned to numpad keys.",type:Number,default:2e3,range:{min:0,max:1e4,step:100}});for(let e of m)a.has(e)||a.register(e,{name:`Numpad Playlist ${e.split("_")[1]}`,type:String,requiresReload:!1,default:"",choices:{}})},g=()=>{if(!game.user)return;let e=a.get("minimumRole");return(game.user.role??CONST.USER_ROLES.NONE)>=e},d=()=>{let e=game.playlists?.contents??[],t={"":"None"};e.forEach(n=>{let s=n.folder?.name,i=s?`[${s}] ${n.name}`:n.name;t[n.id]=i}),m.forEach(n=>{let s=a.get(n)??"";a.register(n,{name:`Numpad Playlist ${n.split("_")[1]}`,type:String,default:"",choices:t}),a.set(n,s)})};var y=.05,k=0,I=1,f=e=>{let t=a.getPlaylistKey(e);if(t)return a.getPlaylist(t)},u=()=>{if(!game.playlists)return[];let e=[];for(let t=1;t<=9;t++){let n=f(t);n&&e.push(n)}return e.filter(Boolean)},o=async e=>{let t=f(e);if(!t)return;let n=u(),s=t.sounds.some(l=>l.playing);for(let l of n)!l||l.id===t.id||await l.stopAll();if(s){await t.stopAll();return}await t.playAll();let i=t.sounds.find(l=>l.playing);ui.notifications?.info(`\u{1F3B5} ${t.name}: ${i?.name}`)},_=async()=>{let e=u().filter(n=>n.sounds.some(s=>s.playing));if(!e.length)return;for(let n of e)await n.stopAll();let t=e.map(n=>n.name).join(", ");ui.notifications?.info(`\u{1F3B5} Stopped playlists: ${t}`)},S=async()=>{let e=u().filter(Boolean);for(let t of e){if(!t.sounds.some(i=>i.playing))continue;await t.playNext();let s=t.sounds.find(i=>i.playing);s&&ui.notifications?.info(`\u{1F3B5} ${t.name}: ${s.name}`)}},h=e=>Math.min(I,Math.max(k,e)),T=async e=>{let t=u();for(let n of t){if(!n)continue;let s=n.sounds.filter(i=>i.playing).map(i=>({_id:i.id,volume:h((i.volume??1)+e)}));s.length>0&&await n.updateEmbeddedDocuments("PlaylistSound",s)}},L=()=>T(+y),P=()=>T(-y);var E=!1,M=.7,Y=2e3,b=async()=>{game.audio?.locked&&await new Promise(e=>{let t=()=>{game.audio?.locked||(window.removeEventListener("pointerdown",t),window.removeEventListener("keydown",t),e())};window.addEventListener("pointerdown",t,{once:!0}),window.addEventListener("keydown",t,{once:!0})})},N=async()=>{if(E)return;E=!0,await b();let e=u();for(let t of e){if(!t)continue;await t.update({fade:Y});let n=t.sounds.map(s=>({_id:s.id,volume:M}));n.length&&await t.updateEmbeddedDocuments("PlaylistSound",n)}};var c=!1,w={Numpad0:_,Numpad1:()=>o(1),Numpad2:()=>o(2),Numpad3:()=>o(3),Numpad4:()=>o(4),Numpad5:()=>o(5),Numpad6:()=>o(6),Numpad7:()=>o(7),Numpad8:()=>o(8),Numpad9:()=>o(9),NumpadAdd:L,NumpadSubtract:P,NumpadEnter:S},R=e=>{if(e.code==="NumLock"){c=!e.getModifierState("NumLock");return}if(!c)return;let t=w[e.code];t&&t()},A=()=>{c||(c=!0,window.addEventListener("keydown",e=>{!e.code.startsWith("Numpad")&&e.code!=="NumLock"||(e.preventDefault(),e.stopImmediatePropagation(),R(e))},!0))};var r="numpad-audio-player";Hooks.once("init",async()=>{p()});Hooks.once("ready",async()=>{g()&&(await N(),d(),A())});Hooks.on("createPlaylist",d);Hooks.on("updatePlaylist",d);Hooks.on("deletePlaylist",d);export{r as APP_NAME};
+// src/settings.ts
+var NUMPAD_PLAYLIST_SETTINGS = [
+  "key_1_playlist" /* KEY_1_PLAYLIST */,
+  "key_2_playlist" /* KEY_2_PLAYLIST */,
+  "key_3_playlist" /* KEY_3_PLAYLIST */,
+  "key_4_playlist" /* KEY_4_PLAYLIST */,
+  "key_5_playlist" /* KEY_5_PLAYLIST */,
+  "key_6_playlist" /* KEY_6_PLAYLIST */,
+  "key_7_playlist" /* KEY_7_PLAYLIST */,
+  "key_8_playlist" /* KEY_8_PLAYLIST */,
+  "key_9_playlist" /* KEY_9_PLAYLIST */
+];
+var ModuleSettings = {
+  defaultRegisterOptions: {
+    scope: "world",
+    requiresReload: true,
+    config: true
+  },
+  register: (key, data) => {
+    if (!game.settings) return;
+    const options = {
+      ...ModuleSettings.defaultRegisterOptions,
+      ...data
+    };
+    game.settings.register(APP_NAME, key, options);
+  },
+  has: (key) => {
+    if (!game.settings) return void 0;
+    return game.settings.settings.has(`${APP_NAME}.${key}`);
+  },
+  get: (key) => {
+    if (!game.settings) return void 0;
+    return game.settings.get(APP_NAME, key);
+  },
+  set: (key, value) => {
+    if (!game.settings) return;
+    return game.settings.set(APP_NAME, key, value);
+  },
+  getPlaylist: (key) => {
+    if (!game.settings || !game.playlists) return null;
+    const id = game.settings.get(APP_NAME, key);
+    if (!id) return null;
+    return game.playlists.get(id) ?? null;
+  },
+  getPlaylistKey: (numpad) => {
+    if (numpad < 1 || numpad > 9) return null;
+    return NUMPAD_PLAYLIST_SETTINGS[numpad - 1] ?? null;
+  }
+};
+var initializeDefaultSettings = () => {
+  ModuleSettings.register("minimum_role" /* MINIMUM_ROLE */, {
+    name: "Minimum Role needed",
+    hint: "Players must have at least this role to control playlists.",
+    type: Number,
+    requiresReload: true,
+    default: CONST.USER_ROLES.ASSISTANT,
+    choices: {
+      [CONST.USER_ROLES.PLAYER]: "Player",
+      [CONST.USER_ROLES.TRUSTED]: "Trusted Player",
+      [CONST.USER_ROLES.ASSISTANT]: "Assistant Gamemaster",
+      [CONST.USER_ROLES.GAMEMASTER]: "Gamemaster"
+    }
+  });
+  ModuleSettings.register("apply_defaults_on_start" /* APPLY_DEFAULTS_ON_START */, {
+    name: "Apply Defaults on Start",
+    hint: "If enabled, the module will apply default settings (volume, fade) to the playlists assigned to numpad keys when the game starts.",
+    type: Boolean,
+    default: true
+  });
+  ModuleSettings.register("tracked_playlist_initial_volume" /* TRACKED_PLAYLIST_INITIAL_VOLUME */, {
+    name: "Initial Volume for Tracked Playlists",
+    hint: "Sets the initial volume for playlists that are assigned to numpad keys when starting or resuming playback.",
+    type: Number,
+    default: 0.7,
+    range: {
+      min: 0,
+      max: 1,
+      step: 0.01
+    }
+  });
+  ModuleSettings.register("tracked_playlist_fade_duration" /* TRACKED_PLAYLIST_FADE_DURATION */, {
+    name: "Fade Duration for Tracked Playlists (ms)",
+    hint: "Time in milliseconds used for fade-in/fade-out when starting or stopping playlists assigned to numpad keys.",
+    type: Number,
+    default: 2e3,
+    range: {
+      min: 0,
+      max: 1e4,
+      step: 100
+    }
+  });
+  for (const key of NUMPAD_PLAYLIST_SETTINGS) {
+    if (!ModuleSettings.has(key)) {
+      ModuleSettings.register(key, {
+        name: `Numpad Playlist ${key.split("_")[1]}`,
+        type: String,
+        requiresReload: false,
+        default: "",
+        choices: {}
+      });
+    }
+  }
+};
+var canUseModule = () => {
+  if (!game.user) return;
+  const minRole = ModuleSettings.get("minimum_role" /* MINIMUM_ROLE */);
+  return (game.user.role ?? CONST.USER_ROLES.NONE) >= minRole;
+};
+var populatePlaylistsChoices = () => {
+  const playlists = game.playlists?.contents ?? [];
+  const choices = { "": "None" };
+  playlists.forEach((pl) => {
+    const folderName = pl.folder?.name;
+    const label = folderName ? `[${folderName}] ${pl.name}` : pl.name;
+    choices[pl.id] = label;
+  });
+  NUMPAD_PLAYLIST_SETTINGS.forEach((key) => {
+    const currentValue = ModuleSettings.get(key) ?? "";
+    ModuleSettings.register(key, {
+      name: `Numpad Playlist ${key.split("_")[1]}`,
+      type: String,
+      default: "",
+      choices
+    });
+    ModuleSettings.set(key, currentValue);
+  });
+};
+
+// src/actions.ts
+var VOLUME_STEP = 0.05;
+var MIN_VOLUME = 0;
+var MAX_VOLUME = 1;
+var getPlaylistForKey = (numpad) => {
+  const key = ModuleSettings.getPlaylistKey(numpad);
+  if (!key) return;
+  return ModuleSettings.getPlaylist(key);
+};
+var getTrackedPlaylists = () => {
+  if (!game.playlists) return [];
+  const tracked = [];
+  for (let key = 1; key <= 9; key++) {
+    const pl = getPlaylistForKey(key);
+    if (pl) tracked.push(pl);
+  }
+  return tracked.filter(Boolean);
+};
+var togglePlaylist = async (key) => {
+  const playlist = getPlaylistForKey(key);
+  if (!playlist) return;
+  const tracked = getTrackedPlaylists();
+  const isPlaying = playlist.sounds.some((s) => s.playing);
+  for (const p of tracked) {
+    if (!p || p.id === playlist.id) continue;
+    await p.stopAll();
+  }
+  if (isPlaying) {
+    await playlist.stopAll();
+    return;
+  }
+  await playlist.playAll();
+  const currentSound = playlist.sounds.find((s) => s.playing);
+  ui.notifications?.info(`\u{1F3B5} ${playlist.name}: ${currentSound?.name}`);
+};
+var stopTrackedPlaylists = async () => {
+  const tracked = getTrackedPlaylists().filter(
+    (pl) => pl.sounds.some((s) => s.playing)
+  );
+  if (!tracked.length) return;
+  for (const playlist of tracked) {
+    await playlist.stopAll();
+  }
+  const names = tracked.map((pl) => pl.name).join(", ");
+  ui.notifications?.info(`\u{1F3B5} Stopped playlists: ${names}`);
+};
+var nextTrack = async () => {
+  const playlists = getTrackedPlaylists().filter(Boolean);
+  for (const playlist of playlists) {
+    const isPlaying = playlist.sounds.some((s) => s.playing);
+    if (!isPlaying) continue;
+    await playlist.playNext();
+    const currentSound = playlist.sounds.find((s) => s.playing);
+    if (currentSound) {
+      ui.notifications?.info(`\u{1F3B5} ${playlist.name}: ${currentSound.name}`);
+    }
+  }
+};
+var clamp = (v) => Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, v));
+var changeVolume = async (delta) => {
+  const playlists = getTrackedPlaylists();
+  for (const pl of playlists) {
+    if (!pl) continue;
+    const updates = pl.sounds.filter((s) => s.playing).map((s) => ({
+      _id: s.id,
+      volume: clamp((s.volume ?? 1) + delta)
+    }));
+    if (updates.length > 0) {
+      await pl.updateEmbeddedDocuments("PlaylistSound", updates);
+    }
+  }
+};
+var increaseVolume = () => changeVolume(+VOLUME_STEP);
+var decreaseVolume = () => changeVolume(-VOLUME_STEP);
+
+// src/audio-state.ts
+var waitForAudioUnlock = async () => {
+  if (!game.audio?.locked) return;
+  await new Promise((resolve) => {
+    const handler = () => {
+      if (!game.audio?.locked) {
+        window.removeEventListener("pointerdown", handler);
+        window.removeEventListener("keydown", handler);
+        resolve();
+      }
+    };
+    window.addEventListener("pointerdown", handler, { once: true });
+    window.addEventListener("keydown", handler, { once: true });
+  });
+};
+var applyTrackedPlaylistDefaults = async () => {
+  const shouldInitializeAudio = ModuleSettings.get("apply_defaults_on_start" /* APPLY_DEFAULTS_ON_START */);
+  if (!shouldInitializeAudio) return;
+  await waitForAudioUnlock();
+  const playlists = getTrackedPlaylists();
+  for (const pl of playlists) {
+    if (!pl) continue;
+    const fade = ModuleSettings.get("tracked_playlist_fade_duration" /* TRACKED_PLAYLIST_FADE_DURATION */);
+    await pl.update({ fade });
+    const volume = ModuleSettings.get("tracked_playlist_initial_volume" /* TRACKED_PLAYLIST_INITIAL_VOLUME */);
+    const updates = pl.sounds.map((s) => ({
+      _id: s.id,
+      volume
+    }));
+    if (updates.length) {
+      await pl.updateEmbeddedDocuments("PlaylistSound", updates);
+    }
+  }
+};
+
+// src/numpad-capture.ts
+var enabled = false;
+var NUMPAD_ACTIONS = {
+  Numpad0: stopTrackedPlaylists,
+  Numpad1: () => togglePlaylist(1),
+  Numpad2: () => togglePlaylist(2),
+  Numpad3: () => togglePlaylist(3),
+  Numpad4: () => togglePlaylist(4),
+  Numpad5: () => togglePlaylist(5),
+  Numpad6: () => togglePlaylist(6),
+  Numpad7: () => togglePlaylist(7),
+  Numpad8: () => togglePlaylist(8),
+  Numpad9: () => togglePlaylist(9),
+  NumpadAdd: increaseVolume,
+  NumpadSubtract: decreaseVolume,
+  NumpadEnter: nextTrack
+};
+var handleNumpadEvent = (event) => {
+  if (event.code === "NumLock") {
+    enabled = !event.getModifierState("NumLock");
+    return;
+  }
+  if (!enabled) return;
+  const action = NUMPAD_ACTIONS[event.code];
+  if (!action) return;
+  action();
+};
+var enableNumpadCapture = () => {
+  if (enabled) return;
+  enabled = true;
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      if (!event.code.startsWith("Numpad") && event.code !== "NumLock") return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      handleNumpadEvent(event);
+    },
+    true
+  );
+};
+
+// src/main.ts
+var APP_NAME = "numpad-audio-player";
+Hooks.once("init", async () => {
+  initializeDefaultSettings();
+});
+Hooks.once("ready", async () => {
+  if (!canUseModule()) return;
+  await applyTrackedPlaylistDefaults();
+  populatePlaylistsChoices();
+  enableNumpadCapture();
+});
+Hooks.on("createPlaylist", populatePlaylistsChoices);
+Hooks.on("updatePlaylist", populatePlaylistsChoices);
+Hooks.on("deletePlaylist", populatePlaylistsChoices);
+export {
+  APP_NAME
+};
+//# sourceMappingURL=main.js.map
