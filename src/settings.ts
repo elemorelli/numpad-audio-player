@@ -1,10 +1,10 @@
 import { APP_NAME } from './main';
 
-export enum ModuleSetting {
-  MINIMUM_ROLE = 'minimumRole',
-  AUTO_INIT = 'autoInitPlaylists',
-  GLOBAL_VOLUME = 'globalVolume',
-  FADE_DURATION = 'fadeDuration',
+export enum Setting {
+  MINIMUM_ROLE = 'minimum_role',
+  APPLY_DEFAULTS_ON_START = 'apply_defaults_on_start',
+  TRACKED_PLAYLIST_INITIAL_VOLUME = 'tracked_playlist_initial_volume',
+  TRACKED_PLAYLIST_FADE_DURATION = 'tracked_playlist_fade_duration',
   KEY_1_PLAYLIST = 'key_1_playlist',
   KEY_2_PLAYLIST = 'key_2_playlist',
   KEY_3_PLAYLIST = 'key_3_playlist',
@@ -17,15 +17,15 @@ export enum ModuleSetting {
 }
 
 const NUMPAD_PLAYLIST_SETTINGS = [
-  ModuleSetting.KEY_1_PLAYLIST,
-  ModuleSetting.KEY_2_PLAYLIST,
-  ModuleSetting.KEY_3_PLAYLIST,
-  ModuleSetting.KEY_4_PLAYLIST,
-  ModuleSetting.KEY_5_PLAYLIST,
-  ModuleSetting.KEY_6_PLAYLIST,
-  ModuleSetting.KEY_7_PLAYLIST,
-  ModuleSetting.KEY_8_PLAYLIST,
-  ModuleSetting.KEY_9_PLAYLIST,
+  Setting.KEY_1_PLAYLIST,
+  Setting.KEY_2_PLAYLIST,
+  Setting.KEY_3_PLAYLIST,
+  Setting.KEY_4_PLAYLIST,
+  Setting.KEY_5_PLAYLIST,
+  Setting.KEY_6_PLAYLIST,
+  Setting.KEY_7_PLAYLIST,
+  Setting.KEY_8_PLAYLIST,
+  Setting.KEY_9_PLAYLIST,
 ];
 
 type SettingType = StringConstructor | NumberConstructor | BooleanConstructor;
@@ -38,7 +38,7 @@ export const ModuleSettings = {
   },
 
   register: <T extends boolean | number | string>(
-    key: ModuleSetting,
+    key: Setting,
     data: {
       name: string;
       hint?: string;
@@ -62,25 +62,25 @@ export const ModuleSettings = {
     game.settings.register(APP_NAME, key, options);
   },
 
-  has: <T extends boolean | number | string>(key: ModuleSetting) => {
+  has: <T extends boolean | number | string>(key: Setting) => {
     if (!game.settings) return undefined;
     // @ts-ignore
     return game.settings.settings.has(`${APP_NAME}.${key}`) as T;
   },
 
-  get: <T extends boolean | number | string>(key: ModuleSetting) => {
+  get: <T extends boolean | number | string>(key: Setting) => {
     if (!game.settings) return undefined;
     // @ts-ignore
     return game.settings.get(APP_NAME, key) as T;
   },
 
-  set: <T extends boolean | number | string>(key: ModuleSetting, value: T) => {
+  set: <T extends boolean | number | string>(key: Setting, value: T) => {
     if (!game.settings) return;
     // @ts-ignore
     return game.settings.set(APP_NAME, key, value);
   },
 
-  getPlaylist: (key: ModuleSetting): foundry.documents.Playlist | null => {
+  getPlaylist: (key: Setting): foundry.documents.Playlist | null => {
     if (!game.settings || !game.playlists) return null;
     // @ts-ignore
     const id = game.settings.get(APP_NAME, key);
@@ -88,14 +88,14 @@ export const ModuleSettings = {
     return game.playlists.get(id as string) ?? null;
   },
 
-  getPlaylistKey: (numpad: number): ModuleSetting | null => {
+  getPlaylistKey: (numpad: number): Setting | null => {
     if (numpad < 1 || numpad > 9) return null;
     return NUMPAD_PLAYLIST_SETTINGS[numpad - 1] ?? null;
   },
 };
 
 export const initializeDefaultSettings = () => {
-  ModuleSettings.register(ModuleSetting.MINIMUM_ROLE, {
+  ModuleSettings.register(Setting.MINIMUM_ROLE, {
     name: 'Minimum Role needed',
     hint: 'Players must have at least this role to control playlists.',
     type: Number,
@@ -109,17 +109,16 @@ export const initializeDefaultSettings = () => {
     },
   });
 
-  ModuleSettings.register(ModuleSetting.AUTO_INIT, {
-    name: 'Auto-Initialize Tracked Playlists',
-    hint: 'If enabled, the module will automatically initialize playlists that have been assigned to numpad keys when the game starts. Only affects the tracked playlists.',
+  ModuleSettings.register(Setting.APPLY_DEFAULTS_ON_START, {
+    name: 'Apply Defaults on Start',
+    hint: 'If enabled, the module will apply default settings (volume, fade) to the playlists assigned to numpad keys when the game starts.',
     type: Boolean,
     default: true,
   });
 
-  ModuleSettings.register(ModuleSetting.GLOBAL_VOLUME, {
-    name: 'Default Volume for Tracked Playlists',
+  ModuleSettings.register(Setting.TRACKED_PLAYLIST_INITIAL_VOLUME, {
+    name: 'Initial Volume for Tracked Playlists',
     hint: 'Sets the initial volume for playlists that are assigned to numpad keys when starting or resuming playback.',
-
     type: Number,
     default: 0.7,
     range: {
@@ -129,7 +128,7 @@ export const initializeDefaultSettings = () => {
     },
   });
 
-  ModuleSettings.register(ModuleSetting.FADE_DURATION, {
+  ModuleSettings.register(Setting.TRACKED_PLAYLIST_FADE_DURATION, {
     name: 'Fade Duration for Tracked Playlists (ms)',
     hint: 'Time in milliseconds used for fade-in/fade-out when starting or stopping playlists assigned to numpad keys.',
     type: Number,
@@ -157,7 +156,7 @@ export const initializeDefaultSettings = () => {
 export const canUseModule = () => {
   if (!game.user) return;
 
-  const minRole = ModuleSettings.get(ModuleSetting.MINIMUM_ROLE) as number;
+  const minRole = ModuleSettings.get(Setting.MINIMUM_ROLE) as number;
   return (game.user.role ?? CONST.USER_ROLES.NONE) >= minRole;
 };
 

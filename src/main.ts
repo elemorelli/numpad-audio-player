@@ -1,4 +1,4 @@
-import { initializeTrackedPlaylists } from './audio-state';
+import { applyTrackedPlaylistDefaults } from './audio-state';
 import { enableNumpadCapture } from './numpad-capture';
 import {
   canUseModule,
@@ -15,7 +15,7 @@ Hooks.once('init', async () => {
 Hooks.once('ready', async () => {
   if (!canUseModule()) return;
 
-  await initializeTrackedPlaylists();
+  await applyTrackedPlaylistDefaults();
 
   populatePlaylistsChoices();
 

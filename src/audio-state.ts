@@ -1,9 +1,5 @@
 import { getTrackedPlaylists } from './actions';
-
-let audioInitialized = false;
-let globalVolume = 0.7;
-
-const FADE_MS = 2000;
+import { ModuleSettings, Setting } from './settings';
 
 const waitForAudioUnlock = async () => {
   if (!game.audio?.locked) return;
@@ -22,9 +18,10 @@ const waitForAudioUnlock = async () => {
   });
 };
 
-export const initializeTrackedPlaylists = async () => {
-  if (audioInitialized) return;
-  audioInitialized = true;
+export const applyTrackedPlaylistDefaults = async () => {
+  const shouldInitializeAudio = ModuleSettings.get<boolean>(Setting.APPLY_DEFAULTS_ON_START);
+
+  if (!shouldInitializeAudio) return;
 
   await waitForAudioUnlock();
 
@@ -33,11 +30,15 @@ export const initializeTrackedPlaylists = async () => {
   for (const pl of playlists) {
     if (!pl) continue;
 
-    await pl.update({ fade: FADE_MS });
+    const fade = ModuleSettings.get<number>(Setting.TRACKED_PLAYLIST_FADE_DURATION);
+
+    await pl.update({ fade });
+
+    const volume = ModuleSettings.get<number>(Setting.TRACKED_PLAYLIST_INITIAL_VOLUME);
 
     const updates = pl.sounds.map((s) => ({
       _id: s.id,
-      volume: globalVolume,
+      volume: volume,
     }));
 
     if (updates.length) {
