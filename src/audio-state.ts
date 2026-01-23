@@ -1,4 +1,4 @@
-import { getTrackedPlaylists } from './playlists';
+import { getTrackedPlaylists } from './actions';
 
 let audioInitialized = false;
 let globalVolume = 0.7;
