@@ -2,8 +2,7 @@
 node_modules/
 
 # Dev bundle
-dist/main.dev.js
-dist/main.dev.js.map
+dist/main.js.map
 
 # Environment / OS
 .env

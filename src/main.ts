@@ -5,7 +5,7 @@ import {
   populatePlaylistsChoices,
 } from './settings';
 
-const DEV = true;
+declare const DEV: boolean;
 export const APP_NAME = 'numpad-audio-player';
 
 Hooks.once('init', async () => {
