@@ -1,8 +1,9 @@
 import {
-  decreaseAdaptiveAudioIntensity,
+  decreaseIntensity,
   decreaseVolume,
-  increaseAdaptiveAudioIntensity,
+  increaseIntensity,
   increaseVolume,
+  intensitySting,
   nextTrack,
   stopTrackedPlaylists,
   togglePlaylist,
@@ -30,8 +31,9 @@ const NUMPAD_ACTIONS: Record<string, NumpadAction> = {
   NumpadAdd: increaseVolume,
   NumpadSubtract: decreaseVolume,
 
-  NumpadMultiply: increaseAdaptiveAudioIntensity,
-  NumpadDivide: decreaseAdaptiveAudioIntensity,
+  NumpadMultiply: increaseIntensity,
+  NumpadDivide: decreaseIntensity,
+  NumpadDecimal: intensitySting,
 };
 
 const handleNumpadEvent = (event: KeyboardEvent) => {
