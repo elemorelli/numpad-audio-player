@@ -9,8 +9,17 @@
   "flags": {
     "canUpload": true
   },
-  "description": "",
   "esmodules": [
     "dist/main.js"
-  ]
+  ],
+  "authors": [
+    {
+      "name": "Eleazar Morelli Sangil",
+      "email": "foundryvtt@elemorelli.com",
+      "url": "https://github.com/elemorelli",
+      "discord": "el_ele",
+      "flags": {}
+    }
+  ],
+  "description": ""
 }
