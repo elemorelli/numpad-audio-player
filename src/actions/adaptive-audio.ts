@@ -4,11 +4,16 @@ const STING_FADE_BACK_MS = 10000;
 const MAX_INTENSITY = 1;
 const CHANGE_FADE_MS = 300;
 
-const isModuleActive = () => !!game.modules?.get('adaptive-audio')?.active;
-
 const getPlayer = () => {
   // @ts-ignore
   return game.adaptiveAudio.player;
+};
+
+const isModuleActive = () => {
+  if (!game.modules?.get('adaptive-audio')?.active) return false;
+
+  const player = getPlayer();
+  return player?.playingSounds.size > 0;
 };
 
 const changeIntensity = (delta: number) => {
