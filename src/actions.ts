@@ -1,8 +1,7 @@
 import { ModuleSettings } from './settings';
 
 const VOLUME_STEP = 0.05;
-const MIN_VOLUME = 0;
-const MAX_VOLUME = 1;
+const INTENSITY_STEP = 0.25;
 
 const getPlaylistForKey = (numpad: number) => {
   const key = ModuleSettings.getPlaylistKey(numpad);
@@ -74,8 +73,6 @@ export const nextTrack = async () => {
   }
 };
 
-const clamp = (v: number) => Math.min(MAX_VOLUME, Math.max(MIN_VOLUME, v));
-
 export const changeVolume = async (delta: number) => {
   const playlists = getTrackedPlaylists();
 
@@ -86,7 +83,7 @@ export const changeVolume = async (delta: number) => {
       .filter((s) => s.playing)
       .map((s) => ({
         _id: s.id,
-        volume: clamp((s.volume ?? 1) + delta),
+        volume: Math.clamp(s.volume + delta, 0, 1),
       }));
 
     if (updates.length > 0) {
@@ -96,4 +93,23 @@ export const changeVolume = async (delta: number) => {
 };
 
 export const increaseVolume = () => changeVolume(+VOLUME_STEP);
+
 export const decreaseVolume = () => changeVolume(-VOLUME_STEP);
+
+const changeAdaptiveAudioIntensity = async (delta: number) => {
+  if (!game.modules?.get('adaptive-audio')?.active) return;
+
+  // @ts-ignore
+  const player = game.adaptiveAudio.player;
+
+  const current = player.intensity;
+  const newIntensity = Math.clamp(current + delta, 0, 1);
+
+  player.setGlobalIntensity(newIntensity);
+};
+
+export const increaseAdaptiveAudioIntensity = () =>
+  changeAdaptiveAudioIntensity(+INTENSITY_STEP);
+
+export const decreaseAdaptiveAudioIntensity = () =>
+  changeAdaptiveAudioIntensity(-INTENSITY_STEP);

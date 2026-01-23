@@ -19,9 +19,11 @@ const waitForAudioUnlock = async () => {
 };
 
 export const applyTrackedPlaylistDefaults = async () => {
-  const shouldInitializeAudio = ModuleSettings.get<boolean>(Setting.APPLY_DEFAULTS_ON_START);
+  const shouldApplyDefaults = ModuleSettings.get<boolean>(
+    Setting.APPLY_DEFAULTS_ON_START
+  );
 
-  if (!shouldInitializeAudio) return;
+  if (!shouldApplyDefaults) return;
 
   await waitForAudioUnlock();
 
@@ -30,11 +32,15 @@ export const applyTrackedPlaylistDefaults = async () => {
   for (const pl of playlists) {
     if (!pl) continue;
 
-    const fade = ModuleSettings.get<number>(Setting.TRACKED_PLAYLIST_FADE_DURATION);
+    const fade = ModuleSettings.get<number>(
+      Setting.TRACKED_PLAYLIST_FADE_DURATION
+    );
 
     await pl.update({ fade });
 
-    const volume = ModuleSettings.get<number>(Setting.TRACKED_PLAYLIST_INITIAL_VOLUME);
+    const volume = ModuleSettings.get<number>(
+      Setting.TRACKED_PLAYLIST_INITIAL_VOLUME
+    );
 
     const updates = pl.sounds.map((s) => ({
       _id: s.id,
