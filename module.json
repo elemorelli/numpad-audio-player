@@ -1,6 +1,6 @@
 {
-  "id": "playlist-thing",
-  "title": "Playlist Thing",
+  "id": "numpad-audio-player",
+  "title": "Numpad Audio Player",
   "version": "1.0.0",
   "compatibility": {
     "minimum": "13",
