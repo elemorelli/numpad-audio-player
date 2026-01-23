@@ -1,18 +1,14 @@
-import { APP_NAME } from './main';
+import { ModuleSettings } from './settings';
 
 const VOLUME_STEP = 0.05;
 const MIN_VOLUME = 0;
 const MAX_VOLUME = 1;
 
-const getPlaylistForKey = (key: number) => {
-  if (!game.settings) return;
+const getPlaylistForKey = (numpad: number) => {
+  const key = ModuleSettings.getPlaylistKey(numpad);
 
-  // @ts-ignore
-  const playlistId = game.settings.get(APP_NAME, `key_${key}_playlist`);
-
-  if (!playlistId || !game.playlists) return null;
-
-  return game.playlists.get(playlistId as string) ?? null;
+  if (!key) return;
+  return ModuleSettings.getPlaylist(key);
 };
 
 export const getTrackedPlaylists = () => {
