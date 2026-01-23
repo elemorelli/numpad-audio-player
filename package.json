@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently -k \"npm:watch\" \"npm:typecheck\"",
-    "watch": "esbuild src/main.ts --bundle --format=esm --target=es2020 --outfile=dist/main.js --sourcemap --watch --define:DEV=true",
+    "watch": "esbuild src/main.ts --bundle --format=esm --target=es2020 --outfile=dist/main.js --sourcemap --watch",
     "typecheck": "tsc --noEmit --watch",
-    "build": "esbuild src/main.ts --bundle --minify --format=esm --target=es2020 --outfile=dist/main.js --define:DEV=false",
+    "build": "esbuild src/main.ts --bundle --minify --format=esm --target=es2020 --outfile=dist/main.js",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "keywords": [],
