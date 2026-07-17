@@ -1,5 +1,5 @@
 import { applyTrackedPlaylistDefaults } from './utils/audio-state';
-import { enableNumpadCapture } from './numpad-capture';
+import { registerNumpadKeybindings } from './numpad-capture';
 import {
   canUseModule,
   initializeDefaultSettings,
@@ -10,16 +10,17 @@ export const APP_NAME = 'numpad-audio-player';
 
 Hooks.once('init', async () => {
   initializeDefaultSettings();
+  registerNumpadKeybindings();
 });
 
 Hooks.once('ready', async () => {
-  if (!canUseModule()) return;
+  if (!canUseModule()) {
+    return;
+  }
 
   await applyTrackedPlaylistDefaults();
 
   populatePlaylistsChoices();
-
-  enableNumpadCapture();
 });
 
 Hooks.on('createPlaylist', populatePlaylistsChoices);

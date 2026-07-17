@@ -2,10 +2,10 @@
   "id": "numpad-audio-player",
   "title": "Numpad Audio Player",
   "description": "Control playlists with the numpad.",
-  "version": "0.4.0",
+  "version": "1.0.0",
   "compatibility": {
-    "minimum": "13",
-    "verified": "13"
+    "minimum": "14",
+    "verified": "14"
   },
   "flags": {
     "canUpload": true

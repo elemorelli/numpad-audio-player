@@ -45,14 +45,16 @@ export const ModuleSettings = {
       type: SettingType;
       scope?: 'world' | 'client';
       config?: boolean;
-      requiresReload?: Boolean;
+      requiresReload?: boolean;
       default: T;
       choices?: Record<string, string>;
       range?: { min: number; max: number; step: number };
       onChange?: (value: T) => void;
     }
   ) => {
-    if (!game.settings) return;
+    if (!game.settings) {
+      return;
+    }
 
     const options = {
       ...ModuleSettings.defaultRegisterOptions,
@@ -63,33 +65,50 @@ export const ModuleSettings = {
   },
 
   has: <T extends boolean | number | string>(key: Setting) => {
-    if (!game.settings) return undefined;
+    if (!game.settings) {
+      return undefined;
+    }
+
     // @ts-ignore
     return game.settings.settings.has(`${APP_NAME}.${key}`) as T;
   },
 
   get: <T extends boolean | number | string>(key: Setting) => {
-    if (!game.settings) return undefined;
+    if (!game.settings) {
+      return undefined;
+    }
+
     // @ts-ignore
     return game.settings.get(APP_NAME, key) as T;
   },
 
   set: <T extends boolean | number | string>(key: Setting, value: T) => {
-    if (!game.settings) return;
+    if (!game.settings) {
+      return;
+    }
+
     // @ts-ignore
     return game.settings.set(APP_NAME, key, value);
   },
 
   getPlaylist: (key: Setting): foundry.documents.Playlist | null => {
-    if (!game.settings || !game.playlists) return null;
+    if (!game.settings || !game.playlists) {
+      return null;
+    }
     // @ts-ignore
     const id = game.settings.get(APP_NAME, key);
-    if (!id) return null;
+    if (!id) {
+      return null;
+    }
+
     return game.playlists.get(id as string) ?? null;
   },
 
   getPlaylistKey: (numpad: number): Setting | null => {
-    if (numpad < 1 || numpad > 9) return null;
+    if (numpad < 1 || numpad > 9) {
+      return null;
+    }
+
     return NUMPAD_PLAYLIST_SETTINGS[numpad - 1] ?? null;
   },
 };
@@ -142,21 +161,31 @@ export const initializeDefaultSettings = () => {
 
   for (const key of NUMPAD_PLAYLIST_SETTINGS) {
     if (!ModuleSettings.has(key)) {
-      ModuleSettings.register(key, {
-        name: `Numpad Playlist ${key.split('_')[1]}`,
-        type: String,
-        requiresReload: false,
-        default: '',
-        choices: {},
-      });
+      registerNumpadPlaylistSetting(key, {});
     }
   }
 };
 
+const registerNumpadPlaylistSetting = (
+  key: Setting,
+  choices: Record<string, string>
+) => {
+  ModuleSettings.register(key, {
+    name: `Numpad Playlist ${key.split('_')[1]}`,
+    type: String,
+    requiresReload: false,
+    default: '',
+    choices,
+  });
+};
+
 export const canUseModule = () => {
-  if (!game.user) return;
+  if (!game.user) {
+    return;
+  }
 
   const minRole = ModuleSettings.get(Setting.MINIMUM_ROLE) as number;
+
   return (game.user.role ?? CONST.USER_ROLES.NONE) >= minRole;
 };
 
@@ -177,12 +206,7 @@ export const populatePlaylistsChoices = () => {
   NUMPAD_PLAYLIST_SETTINGS.forEach((key) => {
     const currentValue = ModuleSettings.get(key) ?? '';
 
-    ModuleSettings.register(key, {
-      name: `Numpad Playlist ${key.split('_')[1]}`,
-      type: String,
-      default: '',
-      choices,
-    });
+    registerNumpadPlaylistSetting(key, choices);
 
     ModuleSettings.set(key, currentValue);
   });

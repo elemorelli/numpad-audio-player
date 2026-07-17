@@ -2,7 +2,9 @@ import { ModuleSettings, Setting } from '../settings';
 import { getTrackedPlaylists } from './playlists';
 
 const waitForAudioUnlock = async () => {
-  if (!game.audio?.locked) return;
+  if (!game.audio?.locked) {
+    return;
+  }
 
   await new Promise<void>((resolve) => {
     const handler = () => {
@@ -23,14 +25,18 @@ export const applyTrackedPlaylistDefaults = async () => {
     Setting.APPLY_DEFAULTS_ON_START
   );
 
-  if (!shouldApplyDefaults) return;
+  if (!shouldApplyDefaults) {
+    return;
+  }
 
   await waitForAudioUnlock();
 
   const playlists = getTrackedPlaylists();
 
   for (const playlist of playlists) {
-    if (!playlist) continue;
+    if (!playlist) {
+      continue;
+    }
 
     const fade = ModuleSettings.get<number>(
       Setting.TRACKED_PLAYLIST_FADE_DURATION
